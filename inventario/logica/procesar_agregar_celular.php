@@ -15,12 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $marca = $_POST['marca'];
     $modelo = $_POST['modelo'];
     $fecha_compra = $_POST['fecha_compra']; // Asegúrate de que este campo esté en tu formulario
+    $fecha_entrega = $_POST['fecha_entrega']; // Nuevo campo para la fecha de entrega
     $observaciones = $_POST['observaciones']; // Captura el nuevo campo
 
-    // Validar los datos (puedes agregar más validaciones según sea necesario)
-    if (empty($cedula) || empty($nombre) || empty($cargo) || empty($area) || empty($sub_area) || empty($serial) || empty($imei) || empty($placa_activos) || empty($marca) || empty($modelo) || empty($fecha_compra)) {
+    // Validar los datos
+    if (empty($cedula) || empty($nombre) || empty($cargo) || empty($area) || empty($sub_area) || empty($serial) || empty($imei) || empty($placa_activos) || empty($marca) || empty($modelo) || empty($fecha_compra) || empty($fecha_entrega)) {
         $_SESSION['error'] = 'Por favor, completa todos los campos requeridos.';
-        header('Location: agregar_celular.php');
+        header('Location: ../vistas/agregar_celular.php');
         exit();
     }
 
@@ -36,8 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Agregar celular
-    $stmt = $pdo->prepare("INSERT INTO celulares (cedula, serial, imei, placa_activos, marca, modelo, fecha_compra, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$cedula, $serial, $imei, $placa_activos, $marca, $modelo, $fecha_compra, $observaciones]); // Agregando el campo observaciones
+    $stmt = $pdo->prepare("INSERT INTO celulares (cedula, serial, imei, placa_activos, marca, modelo, fecha, fecha_compra, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$cedula, $serial, $imei, $placa_activos, $marca, $modelo, $fecha_entrega, $fecha_compra, $observaciones]); // Agregando el campo fecha_entrega
 
     // Mensaje de éxito
     $_SESSION['success'] = 'Celular agregado exitosamente.';
@@ -47,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 } else {
     // Si no es una petición POST, redirigir
-    header('Location: agregar_celular.php');
+    header('Location: ../vistas/agregar_celular.php');
     exit();
 }
 ?>

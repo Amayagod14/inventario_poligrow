@@ -67,8 +67,10 @@ $computadores = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($computador['fecha']) ?></td>
                     <td><?= htmlspecialchars($computador['fecha_compra']) ?></td> <!-- Nuevo campo -->
                     <td>
-                        <a href="generar_acta_computador.php?serial=<?= urlencode($computador['serial']) ?>" class="btn btn-primary">📄 Generar Acta</a>
-                    </td> <!-- Botón para generar acta -->
+                        <a href="entregar_computador.php?serial=<?= urlencode($computador['serial']) ?>" class="btn btn-info btn-sm">📦 Entrega</a>
+                        <a href="devolver_computador.php?serial=<?= urlencode($computador['serial']) ?>" class="btn btn-warning btn-sm">🔄 Devolución</a>
+                        <a href="../logica/dar_baja_computador.php?id=<?= urlencode($computador['id']) ?>" onclick="return confirm('¿Estás seguro de que quieres dar de baja este computador?')" class="btn btn-danger btn-sm">❌ Dar de Baja</a>
+                    </td> <!-- Botones de acción -->
                 </tr>
                 <?php endforeach; ?>
             </tbody>

@@ -10,12 +10,14 @@ $query = "
            GROUP_CONCAT(DISTINCT c.serial SEPARATOR ', ') AS celulares,
            GROUP_CONCAT(DISTINCT co.serial SEPARATOR ', ') AS computadores,
            GROUP_CONCAT(DISTINCT r.serial SEPARATOR ', ') AS radios,
-           GROUP_CONCAT(DISTINCT s.linea_celular SEPARATOR ', ') AS sim_cards
+           GROUP_CONCAT(DISTINCT s.linea_celular SEPARATOR ', ') AS sim_cards,
+           GROUP_CONCAT(DISTINCT i.serial SEPARATOR ', ') AS impresoras
     FROM empleados e
     LEFT JOIN celulares c ON e.cedula = c.cedula
     LEFT JOIN computadores co ON e.cedula = co.cedula
     LEFT JOIN radios r ON e.cedula = r.cedula
     LEFT JOIN sim_cards s ON e.cedula = s.cedula
+    LEFT JOIN impresoras i ON e.cedula = i.cedula
     GROUP BY e.cedula
 ";
 $empleados = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +26,7 @@ $empleados = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
 <?php include 'header.php'; ?> <!-- Incluir el header -->
 
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Inventario de Empleados y Dispositivos Asignados</h2>
+    <h2 class="text-center mb-4">Inventario de Empleados y Dispositivos Asignados por Serial</h2>
 
     <!-- Mensajes de éxito o error -->
     <?php if (isset($_SESSION['mensaje'])): ?>
@@ -58,6 +60,7 @@ $empleados = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <th>Computadores Asignados</th>
                     <th>Radios Asignados</th>
                     <th>SIM Cards Asignadas</th>
+                    <th>Impresoras Asignadas</th> <!-- Nueva columna -->
                 </tr>
             </thead>
             <tbody id="empleadosTable">
@@ -69,6 +72,7 @@ $empleados = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($empleado['computadores'] ?: 'Ninguno') ?></td>
                     <td><?= htmlspecialchars($empleado['radios'] ?: 'Ninguno') ?></td>
                     <td><?= htmlspecialchars($empleado['sim_cards'] ?: 'Ninguno') ?></td>
+                    <td><?= htmlspecialchars($empleado['impresoras'] ?: 'Ninguno') ?></td> <!-- Nueva celda -->
                 </tr>
                 <?php endforeach; ?>
             </tbody>
