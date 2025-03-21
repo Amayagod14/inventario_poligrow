@@ -7,32 +7,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $serial = $_POST['serial'] ?? null; // Serial del dispositivo
     $linea_celular = $_POST['linea_celular'] ?? null; // Línea celular (si aplica)
     $cedula_nueva = $_POST['cedula_nueva']; // Cédula del nuevo empleado
+    $nombre_nuevo = $_POST['nombre_nuevo']; // Nombre del nuevo empleado
+    $cargo_nuevo = $_POST['cargo_nuevo']; // Cargo del nuevo empleado
+    $area_nueva = $_POST['area_nueva']; // Área del nuevo empleado
+    $sub_area_nueva = $_POST['sub_area_nueva']; // Sub área del nuevo empleado
     $tipo_dispositivo = $_POST['tipo']; // Tipo de dispositivo
+    $fecha_entrega = $_POST['fecha_entrega']; // Fecha de entrega
 
     // Validar los datos
-    if (empty($cedula_nueva) || empty($tipo_dispositivo)) {
+    if (empty($cedula_nueva) || empty($tipo_dispositivo) || empty($fecha_entrega) || empty($nombre_nuevo) || empty($cargo_nuevo) || empty($area_nueva) || empty($sub_area_nueva)) {
         $_SESSION['error'] = 'Por favor, completa todos los campos requeridos.';
         header('Location: ../vistas/reasignar_dispositivo.php');
         exit();
     }
 
-    // Preparar la consulta SQL para actualizar el dispositivo según su tipo
+    // Preparar la consulta SQL para verificar la existencia del empleado
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM empleados WHERE cedula = :cedula_nueva");
+    $stmt->execute([':cedula_nueva' => $cedula_nueva]);
+    $existe_empleado = $stmt->fetchColumn();
+
     try {
+        // Si el empleado no existe, insertarlo
+        if (!$existe_empleado) {
+            $insertEmpleadoQuery = "INSERT INTO empleados (cedula, nombre, cargo, area, sub_area) VALUES (:cedula, :nombre, :cargo, :area, :sub_area)";
+            $stmt = $pdo->prepare($insertEmpleadoQuery);
+            $stmt->execute([
+                ':cedula' => $cedula_nueva,
+                ':nombre' => $nombre_nuevo,
+                ':cargo' => $cargo_nuevo,
+                ':area' => $area_nueva,
+                ':sub_area' => $sub_area_nueva
+            ]);
+        }
+
+        // Ahora proceder a reasignar el dispositivo
         switch ($tipo_dispositivo) {
             case 'celular':
-                $query = "UPDATE celulares SET cedula = :cedula_nueva WHERE serial = :serial";
+                $query = "UPDATE celulares SET cedula = :cedula_nueva, fecha_entrega = :fecha_entrega WHERE serial = :serial";
                 break;
             case 'computador':
-                $query = "UPDATE computadores SET cedula = :cedula_nueva WHERE serial = :serial";
+                $query = "UPDATE computadores SET cedula = :cedula_nueva, fecha_entrega = :fecha_entrega WHERE serial = :serial";
                 break;
             case 'impresora':
-                $query = "UPDATE impresoras SET cedula = :cedula_nueva WHERE serial = :serial";
+                $query = "UPDATE impresoras SET cedula = :cedula_nueva, fecha_entrega = :fecha_entrega WHERE serial = :serial";
                 break;
             case 'radio':
-                $query = "UPDATE radios SET cedula = :cedula_nueva WHERE serial = :serial";
+                $query = "UPDATE radios SET cedula = :cedula_nueva, fecha_entrega = :fecha_entrega WHERE serial = :serial";
                 break;
             case 'sim_card':
-                $query = "UPDATE sim_cards SET cedula = :cedula_nueva WHERE linea_celular = :linea_celular";
+                $query = "UPDATE sim_cards SET cedula = :cedula_nueva, fecha_entrega = :fecha_entrega WHERE linea_celular = :linea_celular";
                 break;
             default:
                 throw new Exception('Tipo de dispositivo no válido.');
@@ -45,11 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([
                 ':cedula_nueva' => $cedula_nueva,
                 ':linea_celular' => $linea_celular,
+                ':fecha_entrega' => $fecha_entrega,
             ]);
         } else {
             $stmt->execute([
                 ':cedula_nueva' => $cedula_nueva,
                 ':serial' => $serial,
+                ':fecha_entrega' => $fecha_entrega,
             ]);
         }
 
@@ -68,4 +93,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: ../vistas/reasignar_dispositivo.php');
     exit();
 }
-?>

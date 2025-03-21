@@ -13,11 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $referencia = htmlspecialchars($_POST['referencia']);
     $estado_entrega = htmlspecialchars($_POST['estado_entrega']);
     $observaciones = htmlspecialchars($_POST['observaciones']);
-    $fecha = htmlspecialchars($_POST['fecha']); // Fecha
+    $fecha_entrega = htmlspecialchars($_POST['fecha_entrega']); // Fecha
     $fecha_compra = htmlspecialchars($_POST['fecha_compra']); // Fecha de compra
 
     // Validar los datos
-    if (empty($cedula) || empty($serial) || empty($marca) || empty($placa_activos_fijos) || empty($dispositivo) || empty($referencia) || empty($estado_entrega) || empty($observaciones) || empty($fecha) || empty($fecha_compra)) {
+    if (empty($cedula) || empty($serial) || empty($marca) || empty($placa_activos_fijos) || empty($dispositivo) || empty($referencia) || empty($estado_entrega) || empty($observaciones) || empty($fecha_entrega) || empty($fecha_compra)) {
         $_SESSION['error'] = 'Por favor, completa todos los campos requeridos.';
         header('Location: ../vistas/agregar_radio.php');
         exit();
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         // Preparar la consulta SQL
-        $stmt = $pdo->prepare("INSERT INTO radios (cedula, serial, marca, placa_activos_fijos, dispositivo, referencia, estado_entrega, observaciones, fecha, fecha_compra) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO radios (cedula, serial, marca, placa_activos_fijos, dispositivo, referencia, estado_entrega, observaciones, fecha_entrega, fecha_compra) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         // Ejecutar la consulta
         $stmt->execute([$cedula, $serial, $marca, $placa_activos_fijos, $dispositivo, $referencia, $estado_entrega, $observaciones, $fecha, $fecha_compra]);

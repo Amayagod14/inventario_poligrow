@@ -44,7 +44,7 @@ $computadores = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <th>Serial</th>
                     <th>RAM</th>
                     <th>Estado de Entrega</th>
-                    <th>Fecha</th>
+                    <th>Fecha de Entrega</th>
                     <th>Fecha de Compra</th> <!-- Nuevo campo -->
                     <th>Acciones</th> <!-- Nueva columna para acciones -->
                 </tr>
@@ -64,7 +64,7 @@ $computadores = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($computador['serial']) ?></td>
                     <td><?= htmlspecialchars($computador['ram']) ?></td>
                     <td><?= htmlspecialchars($computador['estado_entrega']) ?></td>
-                    <td><?= htmlspecialchars($computador['fecha']) ?></td>
+                    <td><?= htmlspecialchars($computador['fecha_entrega']) ?></td>
                     <td><?= htmlspecialchars($computador['fecha_compra']) ?></td> <!-- Nuevo campo -->
                     <td>
                         <a href="entregar_computador.php?serial=<?= urlencode($computador['serial']) ?>" class="btn btn-info btn-sm">📦 Entrega</a>

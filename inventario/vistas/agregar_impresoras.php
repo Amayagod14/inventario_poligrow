@@ -41,8 +41,8 @@ $empleados = $pdo->query("SELECT cedula, nombre FROM empleados")->fetchAll(PDO::
     <label>Estado:</label>
     <input type="text" name="estado" required><br>
 
-    <label>Fecha de Asignación:</label>
-    <input type="date" name="fecha_asignacion" required><br>
+    <label>Fecha de entrega:</label>
+    <input type="date" name="fecha_entrega" required><br>
 
     <label>Fecha de Compra:</label>
     <input type="date" name="fecha_compra" required><br>

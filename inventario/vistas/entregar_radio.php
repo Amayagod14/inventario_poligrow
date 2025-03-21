@@ -16,16 +16,16 @@ $serial = $_GET['serial'];
 
 $query = "
     SELECT e.cedula, e.nombre, e.cargo, e.area, e.sub_area, 
-           c.serial, c.imei, c.marca, c.modelo, c.fecha_entrega, c.fecha_compra
-    FROM celulares c
-    LEFT JOIN empleados e ON c.cedula = e.cedula
-    WHERE c.serial = :serial
+           r.serial, r.marca, r.fecha_entrega, r.fecha_compra
+    FROM radios r
+    LEFT JOIN empleados e ON r.cedula = e.cedula
+    WHERE r.serial = :serial
 ";
 $stmt = $pdo->prepare($query);
 $stmt->execute([':serial' => $serial]);
-$celular = $stmt->fetch(PDO::FETCH_ASSOC);
+$radio = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$celular) {
+if (!$radio) {
     die("Error: No se encontraron datos para el serial proporcionado.");
 }
 
@@ -54,8 +54,7 @@ $section->addText("Fecha de entrega: " . date("d/m/Y"), 'normal');
 $section->addTextBreak(1);
 
 // Nueva sección para el compromiso
-$section->addText("Yo, " . $celular['nombre'] . ", con cargo de " . $celular['cargo'] . ", me comprometo a hacer un uso adecuado del dispositivo entregado y a devolverlo en las condiciones en que fue recibido.", 'normal');
-
+$section->addText("Yo, " . $radio['nombre'] . ", con cargo de " . $radio['cargo'] . ", me comprometo a hacer un uso adecuado del dispositivo entregado y a devolverlo en las condiciones en que fue recibido.", 'normal');
 
 $table = $section->addTable('EstiloTabla');
 $table->addRow();
@@ -64,30 +63,19 @@ $table->addCell(7000)->addText("Descripción", 'subtitulo');
 
 $table->addRow();
 $table->addCell(3000)->addText("Marca:", 'normal');
-$table->addCell(7000)->addText($celular['marca'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("Modelo:", 'normal');
-$table->addCell(7000)->addText($celular['modelo'], 'normal');
+$table->addCell(7000)->addText($radio['marca'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Serial:", 'normal');
-$table->addCell(7000)->addText($celular['serial'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("IMEI:", 'normal');
-$table->addCell(7000)->addText($celular['imei'], 'normal');
+$table->addCell(7000)->addText($radio['serial'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de compra:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_compra'])), 'normal'); // Formatear fecha_compra
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($radio['fecha_compra'])), 'normal'); // Formatear fecha_compra
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de entrega:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_entrega'])), 'normal'); // Formatear fecha
-
-$section->addTextBreak(1);
-
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($radio['fecha_entrega'])), 'normal'); // Formatear fecha
 
 $section->addTextBreak(1);
 
@@ -118,7 +106,7 @@ $section->addTextBreak(2);
 $section->addText("RECIBE- RESPONSABLE:", 'subtitulo', ['alignment' => Jc::LEFT]);
 $section->addTextBreak(1);
 $section->addText("_________________________________", 'normal', ['alignment' => Jc::LEFT]);
-$section->addText("Nombre: " . $celular['nombre'] . "\nCargo: " . $celular['cargo'], 'normal', ['alignment' => Jc::LEFT]);
+$section->addText("Nombre: " . $radio['nombre'] . "\nCargo: " . $radio['cargo'], 'normal', ['alignment' => Jc::LEFT]);
 
 $footer = $section->addFooter();
 $footer->addImage('../img/pie.png', [
@@ -127,7 +115,7 @@ $footer->addImage('../img/pie.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$fileName = "Acta_Entrega_Celular_" . $celular['nombre'] . "_" . $celular['cedula'] . "_" . ".docx";
+$fileName = "Acta_Entrega_Radio_" . $radio['nombre'] . "_" . $radio['cedula'] . "_" . ".docx";
 $path = "../actas/" . $fileName;
 $writer = IOFactory::createWriter($phpWord, 'Word2007');
 $writer->save($path);

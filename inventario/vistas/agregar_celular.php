@@ -41,7 +41,7 @@ $dispositivoManager = new DispositivoManager($pdo);
     <label>Modelo:</label>
     <input type="text" name="modelo" required><br>
 
-    <label>Fecha:</label>
+    <label>Fecha de Entrega:</label>
     <input type="date" name="fecha_entrega" required><br>
 
     <label>Fecha de Compra:</label> <!-- Nuevo campo -->

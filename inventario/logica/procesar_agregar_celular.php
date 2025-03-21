@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Agregar celular
-    $stmt = $pdo->prepare("INSERT INTO celulares (cedula, serial, imei, placa_activos, marca, modelo, fecha, fecha_compra, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO celulares (cedula, serial, imei, placa_activos, marca, modelo, fecha_entrega, fecha_compra, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$cedula, $serial, $imei, $placa_activos, $marca, $modelo, $fecha_entrega, $fecha_compra, $observaciones]); // Agregando el campo fecha_entrega
 
     // Mensaje de éxito

@@ -24,7 +24,10 @@ require '../db.php'; // Conectar a la base de datos
         <input type="text" name="placa_activos" id="placa_activos" readonly><br>
 
         <label>Fecha de Compra:</label>
-        <input type="date" name="fecha_compra" id="fecha_compra" ><br>
+        <input type="date" name="fecha_compra" id="fecha_compra" readonly><br>
+
+        <label>Fecha de Entrega:</label>
+        <input type="date" name="fecha_entrega" id="fecha_entrega" required><br>
 
         <label>Linea Celular (solo para SIM):</label>
         <input type="text" name="linea_celular" id="linea_celular" onblur="buscarSimCard()" style="display:none;"><br>
@@ -54,7 +57,7 @@ require '../db.php'; // Conectar a la base de datos
 
     <div id="nuevo-empleado-info" style="display:none;">
         <label>Nombre:</label>
-        <input type="text" name="nombre_nuevo" id="nombre_nuevo" readonly><br>
+        <input type="text" name="nombre_nuevo" id="nombre_nuevo" required><br>
 
         <label>Cargo:</label>
         <input type="text" name="cargo_nuevo" id="cargo_nuevo" required><br>
@@ -84,6 +87,7 @@ function buscarDispositivo() {
                     document.getElementById('modelo').value = data.modelo;
                     document.getElementById('placa_activos').value = data.placa_activos;
                     document.getElementById('fecha_compra').value = data.fecha_compra;
+                    document.getElementById('fecha_entrega').value = data.fecha_entrega; // Asegúrate de que esto se esté llenando
 
                     // Mostrar línea celular si es una tarjeta SIM
                     if (data.tipo === 'sim_card') {
@@ -122,7 +126,7 @@ function checkNuevoEmpleado() {
                 document.getElementById('nuevo-empleado-info').style.display = 'block';
                 
                 if (data.existe) {
-                    document.getElementById('nombre_nuevo').value = data.nombre;
+                    document.getElementById('nombre_nuevo').value = data.nombre; // Asegúrate de que esto se esté llenando
                     document.getElementById('cargo_nuevo').value = data.cargo;
                     document.getElementById('area_nueva').value = data.area;
                     document.getElementById('sub_area_nueva').value = data.sub_area;

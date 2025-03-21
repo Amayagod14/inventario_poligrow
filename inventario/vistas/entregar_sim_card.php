@@ -8,25 +8,25 @@ use PhpOffice\PhpWord\SimpleType\Jc;
 
 \PhpOffice\PhpWord\Autoloader::register();
 
-if (!isset($_GET['serial'])) {
-    die("Error: No se ha proporcionado el serial del dispositivo.");
+if (!isset($_GET['id'])) {
+    die("Error: No se ha proporcionado el ID de la SIM Card.");
 }
 
-$serial = $_GET['serial'];
+$id = $_GET['id'];
 
 $query = "
     SELECT e.cedula, e.nombre, e.cargo, e.area, e.sub_area, 
-           c.serial, c.imei, c.marca, c.modelo, c.fecha_entrega, c.fecha_compra
-    FROM celulares c
-    LEFT JOIN empleados e ON c.cedula = e.cedula
-    WHERE c.serial = :serial
+           s.linea_celular, s.fecha_compra, s.dispositivo, s.fecha_entrega  
+    FROM sim_cards s
+    LEFT JOIN empleados e ON s.cedula = e.cedula
+    WHERE s.id = :id
 ";
 $stmt = $pdo->prepare($query);
-$stmt->execute([':serial' => $serial]);
-$celular = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->execute([':id' => $id]);
+$simCard = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$celular) {
-    die("Error: No se encontraron datos para el serial proporcionado.");
+if (!$simCard) {
+    die("Error: No se encontraron datos para la SIM Card proporcionada.");
 }
 
 $phpWord = new PhpWord();
@@ -49,55 +49,53 @@ $header->addImage('../img/encabezado.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$section->addText("ACTA DE ENTREGA DE HERRAMIENTAS, EQUIPOS Y/O MATERIALES DE TRABAJO", 'titulo', 'centrado');
+$section->addText("ACTA DE ENTREGA DE SIM CARDS", 'titulo', 'centrado');
 $section->addText("Fecha de entrega: " . date("d/m/Y"), 'normal');
 $section->addTextBreak(1);
 
 // Nueva sección para el compromiso
-$section->addText("Yo, " . $celular['nombre'] . ", con cargo de " . $celular['cargo'] . ", me comprometo a hacer un uso adecuado del dispositivo entregado y a devolverlo en las condiciones en que fue recibido.", 'normal');
-
+$section->addText("Yo, " . $simCard['nombre'] . ", con cargo de " . $simCard['cargo'] . ", me comprometo a hacer un uso adecuado de la SIM Card entregada y a devolverla en las condiciones en que fue recibida.", 'normal');
 
 $table = $section->addTable('EstiloTabla');
 $table->addRow();
 $table->addCell(3000)->addText("ITEM", 'subtitulo');
 $table->addCell(7000)->addText("Descripción", 'subtitulo');
 
+// Agregar información del dispositivo
 $table->addRow();
-$table->addCell(3000)->addText("Marca:", 'normal');
-$table->addCell(7000)->addText($celular['marca'], 'normal');
+$table->addCell(3000)->addText("Dispositivo:", 'normal');
+$table->addCell(7000)->addText($simCard['dispositivo'], 'normal');
 
 $table->addRow();
-$table->addCell(3000)->addText("Modelo:", 'normal');
-$table->addCell(7000)->addText($celular['modelo'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("Serial:", 'normal');
-$table->addCell(7000)->addText($celular['serial'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("IMEI:", 'normal');
-$table->addCell(7000)->addText($celular['imei'], 'normal');
+$table->addCell(3000)->addText("Línea Celular:", 'normal');
+$table->addCell(7000)->addText($simCard['linea_celular'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de compra:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_compra'])), 'normal'); // Formatear fecha_compra
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($simCard['fecha_compra'])), 'normal'); // Formatear fecha
+
+$table->addRow();  // Nueva fila para la fecha de entrega
+$table->addCell(3000)->addText("Fecha de entrega:", 'normal');
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($simCard['fecha_entrega'])), 'normal'); // Formatear fecha
+
+// Agregar información del empleado
+$table->addRow();
+$table->addCell(3000)->addText("Nombre del Empleado:", 'normal');
+$table->addCell(7000)->addText($simCard['nombre'], 'normal');
 
 $table->addRow();
-$table->addCell(3000)->addText("Fecha de entrega:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_entrega'])), 'normal'); // Formatear fecha
-
-$section->addTextBreak(1);
-
+$table->addCell(3000)->addText("Cargo:", 'normal');
+$table->addCell(7000)->addText($simCard['cargo'], 'normal');
 
 $section->addTextBreak(1);
 
 $section->addText("Condiciones Adicionales", 'subtitulo');
 $condiciones = [
-    "En caso de pérdida o daño por mal uso se descontará el valor total del equipo. El monto para descontar corresponderá al valor comercial de la herramienta en ese momento.",
-    "En caso de cambio de cargo, funciones y/o terminación laboral del contrato con Poligrow Colombia SAS, las herramientas, equipos y/o materiales anteriormente mencionados pertenecen a la empresa y deberán ser devueltos al área de SISTEMAS.",
-    "En caso de tratarse de equipos de cómputo y/o herramientas de trabajo, el responsable no podrá realizar ninguna modificación, instalación o eliminación del Software sin previa autorización por escrito del área de sistemas. El incumplimiento de lo anterior implicará la aplicación de las medidas disciplinarias establecidas en el Reglamento Interno de Trabajo.",
-    "Los equipos se entregan en condiciones óptimas de uso y por lo tanto la devolución se realizará en la misma forma, teniendo en cuenta el desgaste normal por uso. Se anexa copia de la presente acta a su hoja de vida.",
-    "En fe de lo anterior y con la firma del presente formato las partes deberán conocer y aceptar en su totalidad lo mencionado anteriormente en el acta."
+    "En caso de pérdida o daño por mal uso se descontará el valor total de la SIM Card.",
+    "Las SIM Cards son propiedad de la empresa y deberán ser devueltas al área de SISTEMAS al finalizar el contrato.",
+    "El responsable no podrá realizar ninguna modificación sin previa autorización por escrito del área de sistemas.",
+    "Se anexa copia de la presente acta a su hoja de vida.",
+    "Con la firma del presente formato, las partes aceptan en su totalidad lo mencionado anteriormente."
 ];
 
 foreach ($condiciones as $condicion) {
@@ -118,7 +116,7 @@ $section->addTextBreak(2);
 $section->addText("RECIBE- RESPONSABLE:", 'subtitulo', ['alignment' => Jc::LEFT]);
 $section->addTextBreak(1);
 $section->addText("_________________________________", 'normal', ['alignment' => Jc::LEFT]);
-$section->addText("Nombre: " . $celular['nombre'] . "\nCargo: " . $celular['cargo'], 'normal', ['alignment' => Jc::LEFT]);
+$section->addText("Nombre: " . $simCard['nombre'] . "\nCargo: " . $simCard['cargo'], 'normal', ['alignment' => Jc::LEFT]);
 
 $footer = $section->addFooter();
 $footer->addImage('../img/pie.png', [
@@ -127,7 +125,7 @@ $footer->addImage('../img/pie.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$fileName = "Acta_Entrega_Celular_" . $celular['nombre'] . "_" . $celular['cedula'] . "_" . ".docx";
+$fileName = "Acta_Entregar_Simcard_" . $simCard['nombre'] . "_" . $simCard['cedula'] . "_" . ".docx";
 $path = "../actas/" . $fileName;
 $writer = IOFactory::createWriter($phpWord, 'Word2007');
 $writer->save($path);

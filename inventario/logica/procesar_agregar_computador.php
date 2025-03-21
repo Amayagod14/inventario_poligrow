@@ -18,13 +18,13 @@ $estado_entrega = $_POST['estado_entrega'];
 $disco_duro = $_POST['disco_duro'];
 $cuenta_email = $_POST['cuenta_email'];
 $fecha_compra = $_POST['fecha_compra']; // Asegúrate de que este campo esté en tu formulario
-$fecha = $_POST['fecha']; // Captura la fecha actual
+$fecha_entrega = $_POST['fecha_entrega']; // Captura la fecha actual
 $observaciones = $_POST['observaciones']; // Captura el nuevo campo
 
 // Validar los datos (puedes agregar más validaciones según sea necesario)
-if (empty($cedula) || empty($dispositivo) || empty($marca) || empty($referencia) || empty($mac) || empty($placa_activos) || empty($serial) || empty($ram) || empty($estado_entrega) || empty($disco_duro) || empty($cuenta_email) || empty($fecha_compra) || empty($fecha)) {
+if (empty($cedula) || empty($dispositivo) || empty($marca) || empty($referencia) || empty($mac) || empty($placa_activos) || empty($serial) || empty($ram) || empty($estado_entrega) || empty($disco_duro) || empty($cuenta_email) || empty($fecha_compra) || empty($fecha_entrega)) {
     $_SESSION['error'] = 'Por favor, completa todos los campos requeridos.';
-    header('Location: agregar_computador.php');
+    header('Location: ../vistas/agregar_computador.php');
     exit();
 }
 
@@ -45,8 +45,8 @@ if (!$empleado) {
 }
 
 // Agregar el computador
-$stmt = $pdo->prepare("INSERT INTO computadores (cedula, dispositivo, marca, referencia, mac, placa_activos, serial, ram, estado_entrega, disco_duro, cuenta_email, fecha_compra, fecha, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->execute([$cedula, $dispositivo, $marca, $referencia, $mac, $placa_activos, $serial, $ram, $estado_entrega, $disco_duro, $cuenta_email, $fecha_compra, $fecha, $observaciones]); // Agregando el campo observaciones
+$stmt = $pdo->prepare("INSERT INTO computadores (cedula, dispositivo, marca, referencia, mac, placa_activos, serial, ram, estado_entrega, disco_duro, cuenta_email, fecha_compra, fecha_entrega, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->execute([$cedula, $dispositivo, $marca, $referencia, $mac, $placa_activos, $serial, $ram, $estado_entrega, $disco_duro, $cuenta_email, $fecha_compra, $fecha_entrega, $observaciones]); // Agregando el campo observaciones
 
 // Redirigir o mostrar un mensaje de éxito
 $_SESSION['mensaje'] = "Computador agregado exitosamente.";

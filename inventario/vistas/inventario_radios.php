@@ -41,8 +41,9 @@ $radios = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <th>Referencia</th>
                     <th>Estado de Entrega</th>
                     <th>Observaciones</th>
-                    <th>Fecha</th>
+                    <th>Fecha de Entrega</th>
                     <th>Fecha de Compra</th> <!-- Nuevo campo -->
+                    <th>Acciones</th> <!-- Columna para los botones -->
                 </tr>
             </thead>
             <tbody id="radiosTable">
@@ -57,8 +58,13 @@ $radios = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($radio['referencia']) ?></td>
                     <td><?= htmlspecialchars($radio['estado_entrega']) ?></td>
                     <td><?= htmlspecialchars($radio['observaciones']) ?></td>
-                    <td><?= htmlspecialchars($radio['fecha']) ?></td>
+                    <td><?= htmlspecialchars($radio['fecha_entrega']) ?></td>
                     <td><?= htmlspecialchars($radio['fecha_compra']) ?></td> <!-- Nuevo campo -->
+                    <td>
+                        <a href="entregar_radio.php?serial=<?= htmlspecialchars($radio['serial']) ?>" class="btn btn-info btn-sm">📦 Entrega</a>
+                        <a href="devolver_radio.php?serial=<?= htmlspecialchars($radio['serial']) ?>" class="btn btn-warning btn-sm">🔄 Devolución</a>
+                        <a href="dar_baja_radio.php?id=<?= htmlspecialchars($radio['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas dar de baja este radio?');">❌ Dar de Baja</a>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

@@ -16,16 +16,16 @@ $serial = $_GET['serial'];
 
 $query = "
     SELECT e.cedula, e.nombre, e.cargo, e.area, e.sub_area, 
-           c.serial, c.imei, c.marca, c.modelo, c.fecha_entrega, c.fecha_compra
-    FROM celulares c
-    LEFT JOIN empleados e ON c.cedula = e.cedula
-    WHERE c.serial = :serial
+           r.serial, r.marca, r.placa_activos_fijos, r.dispositivo, r.referencia, r.estado_entrega, r.fecha_entrega, r.fecha_compra, r.observaciones
+    FROM radios r
+    LEFT JOIN empleados e ON r.cedula = e.cedula
+    WHERE r.serial = :serial
 ";
 $stmt = $pdo->prepare($query);
 $stmt->execute([':serial' => $serial]);
-$celular = $stmt->fetch(PDO::FETCH_ASSOC);
+$radio = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$celular) {
+if (!$radio) {
     die("Error: No se encontraron datos para el serial proporcionado.");
 }
 
@@ -49,13 +49,9 @@ $header->addImage('../img/encabezado.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$section->addText("ACTA DE ENTREGA DE HERRAMIENTAS, EQUIPOS Y/O MATERIALES DE TRABAJO", 'titulo', 'centrado');
-$section->addText("Fecha de entrega: " . date("d/m/Y"), 'normal');
+$section->addText("ACTA DE DEVOLUCIÓN DE HERRAMIENTAS, EQUIPOS Y/O MATERIALES DE TRABAJO", 'titulo', 'centrado');
+$section->addText("Fecha de devolución: " . date("d/m/Y"), 'normal');
 $section->addTextBreak(1);
-
-// Nueva sección para el compromiso
-$section->addText("Yo, " . $celular['nombre'] . ", con cargo de " . $celular['cargo'] . ", me comprometo a hacer un uso adecuado del dispositivo entregado y a devolverlo en las condiciones en que fue recibido.", 'normal');
-
 
 $table = $section->addTable('EstiloTabla');
 $table->addRow();
@@ -64,41 +60,37 @@ $table->addCell(7000)->addText("Descripción", 'subtitulo');
 
 $table->addRow();
 $table->addCell(3000)->addText("Marca:", 'normal');
-$table->addCell(7000)->addText($celular['marca'], 'normal');
+$table->addCell(7000)->addText($radio['marca'], 'normal');
 
 $table->addRow();
-$table->addCell(3000)->addText("Modelo:", 'normal');
-$table->addCell(7000)->addText($celular['modelo'], 'normal');
+$table->addCell(3000)->addText("Dispositivo:", 'normal');
+$table->addCell(7000)->addText($radio['dispositivo'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Serial:", 'normal');
-$table->addCell(7000)->addText($celular['serial'], 'normal');
+$table->addCell(7000)->addText($radio['serial'], 'normal');
 
 $table->addRow();
-$table->addCell(3000)->addText("IMEI:", 'normal');
-$table->addCell(7000)->addText($celular['imei'], 'normal');
+$table->addCell(3000)->addText("Placa Activos Fijos:", 'normal');
+$table->addCell(7000)->addText($radio['placa_activos_fijos'], 'normal');
+
+$table->addRow();
+$table->addCell(3000)->addText("Referencia:", 'normal');
+$table->addCell(7000)->addText($radio['referencia'], 'normal');
+
+$table->addRow();
+$table->addCell(3000)->addText("Estado de Entrega:", 'normal');
+$table->addCell(7000)->addText($radio['estado_entrega'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de compra:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_compra'])), 'normal'); // Formatear fecha_compra
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($radio['fecha_compra'])), 'normal');
 
 $table->addRow();
-$table->addCell(3000)->addText("Fecha de entrega:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_entrega'])), 'normal'); // Formatear fecha
+$table->addCell(3000)->addText("Fecha de devolución:", 'normal');
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($radio['fecha_entrega'])), 'normal');
 
 $section->addTextBreak(1);
-
-
-$section->addTextBreak(1);
-
-$section->addText("Condiciones Adicionales", 'subtitulo');
-$condiciones = [
-    "En caso de pérdida o daño por mal uso se descontará el valor total del equipo. El monto para descontar corresponderá al valor comercial de la herramienta en ese momento.",
-    "En caso de cambio de cargo, funciones y/o terminación laboral del contrato con Poligrow Colombia SAS, las herramientas, equipos y/o materiales anteriormente mencionados pertenecen a la empresa y deberán ser devueltos al área de SISTEMAS.",
-    "En caso de tratarse de equipos de cómputo y/o herramientas de trabajo, el responsable no podrá realizar ninguna modificación, instalación o eliminación del Software sin previa autorización por escrito del área de sistemas. El incumplimiento de lo anterior implicará la aplicación de las medidas disciplinarias establecidas en el Reglamento Interno de Trabajo.",
-    "Los equipos se entregan en condiciones óptimas de uso y por lo tanto la devolución se realizará en la misma forma, teniendo en cuenta el desgaste normal por uso. Se anexa copia de la presente acta a su hoja de vida.",
-    "En fe de lo anterior y con la firma del presente formato las partes deberán conocer y aceptar en su totalidad lo mencionado anteriormente en el acta."
-];
 
 foreach ($condiciones as $condicion) {
     $section->addText("->  " . $condicion, 'normal');
@@ -118,7 +110,7 @@ $section->addTextBreak(2);
 $section->addText("RECIBE- RESPONSABLE:", 'subtitulo', ['alignment' => Jc::LEFT]);
 $section->addTextBreak(1);
 $section->addText("_________________________________", 'normal', ['alignment' => Jc::LEFT]);
-$section->addText("Nombre: " . $celular['nombre'] . "\nCargo: " . $celular['cargo'], 'normal', ['alignment' => Jc::LEFT]);
+$section->addText("Nombre: " . $radio['nombre'] . "\nCargo: " . $radio['cargo'], 'normal', ['alignment' => Jc::LEFT]);
 
 $footer = $section->addFooter();
 $footer->addImage('../img/pie.png', [
@@ -127,7 +119,7 @@ $footer->addImage('../img/pie.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$fileName = "Acta_Entrega_Celular_" . $celular['nombre'] . "_" . $celular['cedula'] . "_" . ".docx";
+$fileName = "Acta_Devolucion_Radio_" . $radio['nombre'] . "_" . $radio['cedula'] . "_" . ".docx";
 $path = "../actas/" . $fileName;
 $writer = IOFactory::createWriter($phpWord, 'Word2007');
 $writer->save($path);

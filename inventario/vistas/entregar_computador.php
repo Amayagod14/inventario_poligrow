@@ -16,7 +16,7 @@ $serial = $_GET['serial'];
 
 $query = "
     SELECT e.cedula, e.nombre, e.cargo, e.area, e.sub_area, 
-           c.serial, c.marca, c.dispositivo, c.fecha, c.fecha_compra, c.ram, c.mac, c.referencia
+           c.serial, c.marca, c.dispositivo, c.fecha_entrega, c.fecha_compra, c.ram, c.mac, c.referencia
     FROM computadores c
     LEFT JOIN empleados e ON c.cedula = e.cedula
     WHERE c.serial = :serial
@@ -53,6 +53,9 @@ $section->addText("ACTA DE ENTREGA DE HERRAMIENTAS, EQUIPOS Y/O MATERIALES DE TR
 $section->addText("Fecha de entrega: " . date("d/m/Y"), 'normal');
 $section->addTextBreak(1);
 
+// Nueva sección para el compromiso
+$section->addText("Yo, " . $computador['nombre'] . ", con cargo de " . $computador['cargo'] . ", me comprometo a hacer un uso adecuado del dispositivo entregado y a devolverlo en las condiciones en que fue recibido.", 'normal');
+
 $table = $section->addTable('EstiloTabla');
 $table->addRow();
 $table->addCell(3000)->addText("ITEM", 'subtitulo');
@@ -88,10 +91,9 @@ $table->addCell(7000)->addText(date("d/m/Y", strtotime($computador['fecha_compra
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de entrega:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($computador['fecha'])), 'normal'); // Formatear fecha
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($computador['fecha_entrega'])), 'normal'); // Formatear fecha
 
 $section->addTextBreak(1);
-
 $section->addText("Condiciones Adicionales", 'subtitulo');
 $condiciones = [
     "En caso de pérdida o daño por mal uso se descontará el valor total del equipo. El monto para descontar corresponderá al valor comercial de la herramienta en ese momento.",
@@ -128,7 +130,7 @@ $footer->addImage('../img/pie.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$fileName = "Acta_Entrega_Computador_" . $serial . ".docx";
+$fileName = "Acta_Entrega_Computador_" . $computador['nombre'] . "_" . $computador['cedula'] . "_"  . ".docx";
 $path = "../actas/" . $fileName;
 $writer = IOFactory::createWriter($phpWord, 'Word2007');
 $writer->save($path);

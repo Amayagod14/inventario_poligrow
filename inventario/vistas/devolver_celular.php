@@ -16,7 +16,7 @@ $serial = $_GET['serial'];
 
 $query = "
     SELECT e.cedula, e.nombre, e.cargo, e.area, e.sub_area, 
-           c.serial, c.imei, c.marca, c.modelo, c.fecha, c.fecha_compra
+           c.serial, c.imei, c.marca, c.modelo, c.fecha_entrega, c.fecha_compra
     FROM celulares c
     LEFT JOIN empleados e ON c.cedula = e.cedula
     WHERE c.serial = :serial
@@ -80,18 +80,9 @@ $table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_compra'])
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de entrega:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha'])), 'normal'); // Formatear fecha
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_entrega'])), 'normal'); // Formatear fecha
 
 $section->addTextBreak(1);
-
-$section->addText("Condiciones Adicionales", 'subtitulo');
-$condiciones = [
-    "En caso de pérdida o daño por mal uso se descontará el valor total del equipo. El monto para descontar corresponderá al valor comercial de la herramienta en ese momento.",
-    "En caso de cambio de cargo, funciones y/o terminación laboral del contrato con Poligrow Colombia SAS. las herramientas, equipos y/o materiales anteriormente mencionados pertenecen a la empresa y deberán ser devueltos al área de SISTEMAS.",
-    "En caso de tratarse de equipos de cómputo y/o herramientas de trabajo, el responsable no podrá realizar ninguna modificación, instalación o eliminación del Software sin previa autorización por escrito del área de sistemas. El incumplimiento de lo anterior implicará la aplicación de las medidas disciplinarias establecidas en el Reglamento Interno de Trabajo.",
-    "Los equipos se entregan en condiciones óptimas de uso y por lo tanto la devolución se realizará en la misma forma, teniendo en cuenta el desgaste normal por uso. Se anexa copia de la presente acta a su hoja de vida.",
-    "En fe de lo anterior y con la firma del presente formato las partes deberán conocer y aceptar en su totalidad lo mencionado anteriormente en el acta."
-];
 
 foreach ($condiciones as $condicion) {
     $section->addText("->  " . $condicion, 'normal');
@@ -120,7 +111,7 @@ $footer->addImage('../img/pie.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$fileName = "Acta_Entrega_Celular_" . $serial . ".docx";
+$fileName = "Acta_Devolucion_Celular_" . $celular['nombre'] . "_" . $celular['cedula'] . "_"  . ".docx";
 $path = "../actas/" . $fileName;
 $writer = IOFactory::createWriter($phpWord, 'Word2007');
 $writer->save($path);

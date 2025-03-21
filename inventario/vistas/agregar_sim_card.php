@@ -35,6 +35,9 @@ $dispositivoManager = new DispositivoManager($pdo);
     <label>Fecha de Compra:</label>
     <input type="date" name="fecha_compra" required><br>
 
+    <label>Fecha de Entrega:</label>
+    <input type="date" name="fecha_entrega" required><br> <!-- Nuevo campo agregado -->
+
     <button type="submit">Agregar SIM Card</button>
 </form>
 

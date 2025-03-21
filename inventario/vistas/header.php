@@ -28,19 +28,23 @@
 
         <h1 class="h3">📋 Gestión de Inventario</h1>
 
-        <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                📌 Opciones de Inventario
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="inventario_sim_cards.php">📶 SIM Cards</a></li>
-                <li><a class="dropdown-item" href="inventario_celulares.php">📱 Celulares</a></li>
-                <li><a class="dropdown-item" href="inventario_radios.php">📡 Radios</a></li>
-                <li><a class="dropdown-item" href="inventario_computadores.php">💻 Computadores</a></li>
-                <li><a class="dropdown-item" href="inventario_impresoras.php">🖨️ Impresoras</a></li>
-                <li><a class="dropdown-item" href="reasignar_dispositivo.php">🔄 Reasignar</a></li>
-                <li><a class="dropdown-item" href="usuarios.php">👤 Gestión de Responsables</a></li>
-                <li><a class="dropdown-item" href="dispositivos_dados_baja.php">🗑️ Dispositivos Dados de Baja</a></li> </ul>
+        <div class="d-flex align-items-center">
+            <div class="dropdown me-2">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    📌 Opciones de Inventario
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="inventario_sim_cards.php">📶 SIM Cards</a></li>
+                    <li><a class="dropdown-item" href="inventario_celulares.php">📱 Celulares</a></li>
+                    <li><a class="dropdown-item" href="inventario_radios.php">📡 Radios</a></li>
+                    <li><a class="dropdown-item" href="inventario_computadores.php">💻 Computadores</a></li>
+                    <li><a class="dropdown-item" href="inventario_impresoras.php">🖨️ Impresoras</a></li>
+                    <li><a class="dropdown-item" href="reasignar_dispositivo.php">🔄 Reasignar</a></li>
+                    <li><a class="dropdown-item" href="usuarios.php">👤 Gestión de Responsables</a></li>
+                    <li><a class="dropdown-item" href="dispositivos_dados_baja.php">🗑️ Dispositivos Dados de Baja</a></li>
+                </ul>
+            </div>
+            <a href="../logica/logout.php" class="btn btn-danger">🚪 Cerrar Sesión</a>
         </div>
     </div>
 </header>

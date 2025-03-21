@@ -48,8 +48,8 @@ $dispositivoManager = new DispositivoManager($pdo);
     <label>Observaciones:</label>
     <textarea name="observaciones"></textarea><br>
 
-    <label>Fecha:</label>
-    <input type="date" name="fecha" required><br>
+    <label>Fecha de Entrega:</label>
+    <input type="date" name="fecha_entrega" required><br>
 
     <label>Fecha de Compra:</label>
     <input type="date" name="fecha_compra" required><br>

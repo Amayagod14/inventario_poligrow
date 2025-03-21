@@ -47,7 +47,9 @@ $impresoras = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <th>Modelo</th>
                     <th>Placa de Activos</th>
                     <th>Estado</th>
+                    <th>Fecha de Entrega</th>
                     <th>Fecha de Compra</th>
+                    <th>Acciones</th> <!-- Columna para los botones -->
                 </tr>
             </thead>
             <tbody id="impresorasTable">
@@ -63,7 +65,13 @@ $impresoras = $pdo->query($query)->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($impresora['modelo']) ?></td>
                     <td><?= htmlspecialchars($impresora['placa_activos']) ?></td>
                     <td><?= htmlspecialchars($impresora['estado']) ?></td>
+                    <td><?= htmlspecialchars($impresora['fecha_entrega']) ?></td>
                     <td><?= htmlspecialchars($impresora['fecha_compra']) ?></td>
+                    <td>
+                        <a href="entregar_impresora.php?serial=<?= htmlspecialchars($impresora['serial']) ?>" class="btn btn-info btn-sm">📦 Entrega</a>
+                        <a href="devolver_impresora.php?serial=<?= htmlspecialchars($impresora['serial']) ?>" class="btn btn-warning btn-sm">🔄 Devolución</a>
+                        <a href="../logica/dar_baja_impresora.php?id=<?= htmlspecialchars($impresora['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas dar de baja esta impresora?');">❌ Dar de Baja</a>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

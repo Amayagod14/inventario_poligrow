@@ -8,25 +8,25 @@ use PhpOffice\PhpWord\SimpleType\Jc;
 
 \PhpOffice\PhpWord\Autoloader::register();
 
-if (!isset($_GET['serial'])) {
-    die("Error: No se ha proporcionado el serial del dispositivo.");
+if (!isset($_GET['id'])) {
+    die("Error: No se ha proporcionado el ID de la SIM Card.");
 }
 
-$serial = $_GET['serial'];
+$id = $_GET['id'];
 
 $query = "
     SELECT e.cedula, e.nombre, e.cargo, e.area, e.sub_area, 
-           c.serial, c.marca, c.dispositivo, c.fecha_entrega, c.fecha_compra, c.ram, c.mac, c.referencia
-    FROM computadores c
-    LEFT JOIN empleados e ON c.cedula = e.cedula
-    WHERE c.serial = :serial
+           s.linea_celular, s.fecha_compra, s.dispositivo, s.fecha_entrega  
+    FROM sim_cards s
+    LEFT JOIN empleados e ON s.cedula = e.cedula
+    WHERE s.id = :id
 ";
 $stmt = $pdo->prepare($query);
-$stmt->execute([':serial' => $serial]);
-$computador = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->execute([':id' => $id]);
+$simCard = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$computador) {
-    die("Error: No se encontraron datos para el serial proporcionado.");
+if (!$simCard) {
+    die("Error: No se encontraron datos para la SIM Card proporcionada.");
 }
 
 $phpWord = new PhpWord();
@@ -49,7 +49,7 @@ $header->addImage('../img/encabezado.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$section->addText("ACTA DE DEVOLUCIÓN DE HERRAMIENTAS, EQUIPOS Y/O MATERIALES DE TRABAJO", 'titulo', 'centrado');
+$section->addText("ACTA DE DEVOLUCIÓN DE SIM CARDS", 'titulo', 'centrado');
 $section->addText("FECHA DE DEVOLUCIÓN: " . date("d/m/Y"), 'normal');
 $section->addTextBreak(1);
 
@@ -59,36 +59,20 @@ $table->addCell(3000)->addText("ITEM", 'subtitulo');
 $table->addCell(7000)->addText("Descripción", 'subtitulo');
 
 $table->addRow();
-$table->addCell(3000)->addText("Marca:", 'normal');
-$table->addCell(7000)->addText($computador['marca'], 'normal');
-
-$table->addRow();
 $table->addCell(3000)->addText("Dispositivo:", 'normal');
-$table->addCell(7000)->addText($computador['dispositivo'], 'normal');
+$table->addCell(7000)->addText($simCard['dispositivo'], 'normal');
 
 $table->addRow();
-$table->addCell(3000)->addText("Serial:", 'normal');
-$table->addCell(7000)->addText($computador['serial'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("RAM:", 'normal');
-$table->addCell(7000)->addText($computador['ram'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("MAC:", 'normal');
-$table->addCell(7000)->addText($computador['mac'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("Referencia:", 'normal');
-$table->addCell(7000)->addText($computador['referencia'], 'normal');
+$table->addCell(3000)->addText("Línea Celular:", 'normal');
+$table->addCell(7000)->addText($simCard['linea_celular'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de compra:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($computador['fecha_compra'])), 'normal'); // Formatear fecha_compra
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($simCard['fecha_compra'])), 'normal'); // Formatear fecha
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de entrega:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($computador['fecha_entrega'])), 'normal'); // Formatear fecha
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($simCard['fecha_entrega'])), 'normal'); // Formatear fecha
 
 $section->addTextBreak(1);
 
@@ -110,7 +94,7 @@ $section->addTextBreak(2);
 $section->addText("ENTREGA:", 'subtitulo', ['alignment' => Jc::LEFT]);
 $section->addTextBreak(1);
 $section->addText("_________________________________", 'normal', ['alignment' => Jc::LEFT]);
-$section->addText("Nombre: " . $computador['nombre'] . "\nCargo: " . $computador['cargo'], 'normal', ['alignment' => Jc::LEFT]);
+$section->addText("Nombre: " . $simCard['nombre'] . "\nCargo: " . $simCard['cargo'], 'normal', ['alignment' => Jc::LEFT]);
 
 $footer = $section->addFooter();
 $footer->addImage('../img/pie.png', [
@@ -119,7 +103,7 @@ $footer->addImage('../img/pie.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$fileName = "Acta_Devolucion_Computador_" . $computador['nombre'] . "_" . $computador['cedula'] . "_"  . ".docx";
+$fileName = "Acta_Devolucion_Simcard_" . $simCard['nombre'] . "_" . $simCard['cedula'] . "_" . ".docx";
 $path = "../actas/" . $fileName;
 $writer = IOFactory::createWriter($phpWord, 'Word2007');
 $writer->save($path);

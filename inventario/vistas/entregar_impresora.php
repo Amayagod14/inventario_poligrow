@@ -16,16 +16,16 @@ $serial = $_GET['serial'];
 
 $query = "
     SELECT e.cedula, e.nombre, e.cargo, e.area, e.sub_area, 
-           c.serial, c.imei, c.marca, c.modelo, c.fecha_entrega, c.fecha_compra
-    FROM celulares c
-    LEFT JOIN empleados e ON c.cedula = e.cedula
-    WHERE c.serial = :serial
+           i.serial, i.marca, i.modelo, i.fecha_entrega, i.fecha_compra
+    FROM impresoras i
+    LEFT JOIN empleados e ON i.cedula = e.cedula
+    WHERE i.serial = :serial
 ";
 $stmt = $pdo->prepare($query);
 $stmt->execute([':serial' => $serial]);
-$celular = $stmt->fetch(PDO::FETCH_ASSOC);
+$impresora = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$celular) {
+if (!$impresora) {
     die("Error: No se encontraron datos para el serial proporcionado.");
 }
 
@@ -49,13 +49,12 @@ $header->addImage('../img/encabezado.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$section->addText("ACTA DE ENTREGA DE HERRAMIENTAS, EQUIPOS Y/O MATERIALES DE TRABAJO", 'titulo', 'centrado');
+$section->addText("ACTA DE ENTREGA DE IMPRESORAS", 'titulo', 'centrado');
 $section->addText("Fecha de entrega: " . date("d/m/Y"), 'normal');
 $section->addTextBreak(1);
 
 // Nueva sección para el compromiso
-$section->addText("Yo, " . $celular['nombre'] . ", con cargo de " . $celular['cargo'] . ", me comprometo a hacer un uso adecuado del dispositivo entregado y a devolverlo en las condiciones en que fue recibido.", 'normal');
-
+$section->addText("Yo, " . $impresora['nombre'] . ", con cargo de " . $impresora['cargo'] . ", me comprometo a hacer un uso adecuado del dispositivo entregado y a devolverlo en las condiciones en que fue recibido.", 'normal');
 
 $table = $section->addTable('EstiloTabla');
 $table->addRow();
@@ -64,30 +63,23 @@ $table->addCell(7000)->addText("Descripción", 'subtitulo');
 
 $table->addRow();
 $table->addCell(3000)->addText("Marca:", 'normal');
-$table->addCell(7000)->addText($celular['marca'], 'normal');
+$table->addCell(7000)->addText($impresora['marca'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Modelo:", 'normal');
-$table->addCell(7000)->addText($celular['modelo'], 'normal');
+$table->addCell(7000)->addText($impresora['modelo'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Serial:", 'normal');
-$table->addCell(7000)->addText($celular['serial'], 'normal');
-
-$table->addRow();
-$table->addCell(3000)->addText("IMEI:", 'normal');
-$table->addCell(7000)->addText($celular['imei'], 'normal');
+$table->addCell(7000)->addText($impresora['serial'], 'normal');
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de compra:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_compra'])), 'normal'); // Formatear fecha_compra
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($impresora['fecha_compra'])), 'normal'); // Formatear fecha_compra
 
 $table->addRow();
 $table->addCell(3000)->addText("Fecha de entrega:", 'normal');
-$table->addCell(7000)->addText(date("d/m/Y", strtotime($celular['fecha_entrega'])), 'normal'); // Formatear fecha
-
-$section->addTextBreak(1);
-
+$table->addCell(7000)->addText(date("d/m/Y", strtotime($impresora['fecha_entrega'])), 'normal'); // Formatear fecha_entrega
 
 $section->addTextBreak(1);
 
@@ -118,7 +110,7 @@ $section->addTextBreak(2);
 $section->addText("RECIBE- RESPONSABLE:", 'subtitulo', ['alignment' => Jc::LEFT]);
 $section->addTextBreak(1);
 $section->addText("_________________________________", 'normal', ['alignment' => Jc::LEFT]);
-$section->addText("Nombre: " . $celular['nombre'] . "\nCargo: " . $celular['cargo'], 'normal', ['alignment' => Jc::LEFT]);
+$section->addText("Nombre: " . $impresora['nombre'] . "\nCargo: " . $impresora['cargo'], 'normal', ['alignment' => Jc::LEFT]);
 
 $footer = $section->addFooter();
 $footer->addImage('../img/pie.png', [
@@ -127,7 +119,7 @@ $footer->addImage('../img/pie.png', [
     'alignment' => Jc::CENTER
 ]);
 
-$fileName = "Acta_Entrega_Celular_" . $celular['nombre'] . "_" . $celular['cedula'] . "_" . ".docx";
+$fileName = "Acta_Entrega_Impresora_" . $impresora['nombre'] . "_" . $impresora['cedula'] . "_"  . ".docx";
 $path = "../actas/" . $fileName;
 $writer = IOFactory::createWriter($phpWord, 'Word2007');
 $writer->save($path);
